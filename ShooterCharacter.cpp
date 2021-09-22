@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/PlayerInput.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() : BaseTurnRate(45.f), BaseLookUpRate(45.f)
@@ -23,7 +24,16 @@ AShooterCharacter::AShooterCharacter() : BaseTurnRate(45.f), BaseLookUpRate(45.f
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);//attach camera to end of boom
 	FollowCamera->bUsePawnControlRotation = false;//Camera does not rotate relative to pawn
 
-	
+	//Don't rotate when the controller rotates. Let the controller only Affect the Camera.
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	//Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true;//Character moves in the direction of input...
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);//... at this rotation rate
+	GetCharacterMovement()->JumpZVelocity = 600.f;
+	GetCharacterMovement()->AirControl = 0.2f;
 
 }
 
@@ -62,8 +72,8 @@ static void InitializeDefaultPawnInputBindings()
 		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("TurnRate", EKeys::Left, -1.f));
 		
 
-		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("LookUpRate", EKeys::Up, 1.f));
-		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("LookUpRate", EKeys::Down, -1.f));
+		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("LookUpRate", EKeys::Up, -1.f));
+		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("LookUpRate", EKeys::Down, 1.f));
 
 		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("Turn", EKeys::MouseX, 1.f));
 		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("LookUp", EKeys::MouseY, -1.f));
